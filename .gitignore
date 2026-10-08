@@ -1,0 +1,68 @@
+# ---- Environment / secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# ---- Testing / caches ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.cache/
+
+# ---- Node / Next.js ----
+node_modules/
+.next/
+out/
+.turbo/
+.next-env.d.ts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Logs / generated artifacts ----
+*.log
+backend/full_run.log
+backend/page_dump.html
+
+# ---- Temporary debugging / inspection scripts ----
+backend/debug_*.py
+backend/inspect_*.py
+backend/check_valid_urls.py
+backend/check_db_urls.py
+backend/test_fixed_scraper.py
+
+# ---- Database dumps ----
+*.bson
+*.dump
+mongo_dump/
+dump/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
