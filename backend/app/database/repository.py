@@ -5,11 +5,22 @@ from app.database.connection import get_database
 
 
 COLLECTION_NAME = "skus"
+RESTOCK_COLLECTION_NAME = "restock_events"
 
 
 async def get_sku_collection() -> AsyncIOMotorCollection:
     db = get_database()
     return db[COLLECTION_NAME]
+
+
+async def get_restock_collection() -> AsyncIOMotorCollection:
+    """Append-only log of genuine out-of-stock -> in-stock transitions.
+
+    One document per ``(shop, url, size)`` (unique) so a repeated refresh never
+    duplicates an event. See ``app/refresh/restock.py``.
+    """
+    db = get_database()
+    return db[RESTOCK_COLLECTION_NAME]
 
 
 async def create_indexes() -> None:
@@ -25,6 +36,13 @@ async def create_indexes() -> None:
         unique=True,
         name="uniq_shop_url_size",
     )
+    restocks = await get_restock_collection()
+    await restocks.create_index(
+        [("shop", 1), ("url", 1), ("size", 1)],
+        unique=True,
+        name="uniq_restock_shop_url_size",
+    )
+    await restocks.create_index("last_detected_at")
 
 
 async def insert_sku(sku: SKU) -> SKUInDB:

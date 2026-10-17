@@ -31,6 +31,13 @@ ENV/
 htmlcov/
 .cache/
 
+# ---- Browser automation (local profiles / reports; Chromium itself is
+#      installed outside the repo by ``python -m playwright install``) ----
+.playwright/
+playwright-report/
+test-results/
+user_data/
+
 # ---- Node / Next.js ----
 node_modules/
 .next/
@@ -45,20 +52,46 @@ pnpm-debug.log*
 # ---- Logs / generated artifacts ----
 *.log
 backend/full_run.log
-backend/page_dump.html
+backend/logs/
+dashboard.html
 
 # ---- Temporary debugging / inspection scripts ----
 backend/debug_*.py
 backend/inspect_*.py
-backend/check_valid_urls.py
 backend/check_db_urls.py
+backend/check_db.py
+backend/check_duplicates.py
+backend/verify_full_run.py
 backend/test_fixed_scraper.py
+backend/test_duplicate_check.py
+backend/test_small_verification.py
 
-# ---- Database dumps ----
+# ---- Veja discovery (Phase 1) artifacts ----
+backend/veja_discover_*.py
+backend/veja_unique_urls.txt
+backend/veja_product_variation_sample.json
+backend/veja_page_*.html
+
+# ---- Salomon discovery (Phase 1) artifacts ----
+backend/salomon_discover_*.py
+backend/salomon_*.xml
+backend/salomon_*.json
+backend/salomon_block_page.html
+
+# ---- AsphaltGold retailer artifacts ----
+backend/asphaltgold_full_run.py
+backend/asphaltgold_verify.py
+backend/asphaltgold_*.json
+backend/asphaltgold_*.xml
+
+# ---- Database dumps / demo datasets ----
 *.bson
 *.dump
+*.jsonl
 mongo_dump/
 dump/
+data/
+backend/data/
 
 # ---- OS / editor ----
 .DS_Store

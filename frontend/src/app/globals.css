@@ -1,26 +1,1474 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   SKUU dashboard — premium SaaS theme
+   Ported from dashboard.html, scoped under .skuu-app so it never leaks.
+   ========================================================================== */
+
+.skuu-app {
+  --card: #fff;
+  --ink: #111;
+  --muted: #7a7f7c;
+  --line: #e4e7e5;
+  --green: #16a34a;
+  --green-soft: #eaf7ef;
+  --red: #dc2626;
+  --radius: 16px;
+
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(900px 500px at 8% -5%, rgba(22, 163, 74, 0.16), transparent 60%),
+    radial-gradient(800px 500px at 100% 10%, rgba(132, 204, 22, 0.14), transparent 60%),
+    radial-gradient(900px 600px at 70% 105%, rgba(59, 130, 246, 0.1), transparent 60%),
+    radial-gradient(rgba(17, 17, 17, 0.1) 1px, transparent 1.3px) 0 0 / 22px 22px,
+    linear-gradient(180deg, #f3fbf6 0%, #f7faf8 45%, #f4f7fb 100%);
+  background-attachment: fixed;
+  font-family: var(--font-inter), Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.45;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.skuu-app .wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.skuu-app header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+  position: relative;
+  padding: 26px 28px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.skuu-app header > div {
+  position: relative;
+  z-index: 1;
+}
+
+.skuu-app header .net {
+  position: absolute;
+  right: -10px;
+  top: 0;
+  height: 100%;
+  width: 55%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.skuu-app .bars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 12px;
+}
+
+.skuu-app .bars i {
+  display: block;
+  width: 5px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.skuu-app .kpi,
+.skuu-app .panel {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.skuu-app .kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+}
+
+.skuu-app .kpi {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.skuu-app .net .p {
+  animation: pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.skuu-app .eyebrow {
+  letter-spacing: 0.14em;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.skuu-app h1 {
+  font-size: 30px;
+  margin: 4px 0 0;
+  font-weight: 400;
+}
+
+.skuu-app h1 b {
+  font-weight: 700;
+}
+
+.skuu-app .banner {
+  background: #fff7e0;
+  border: 1px solid #f1deaa;
+  color: #7a5b00;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.skuu-app .banner.live {
+  background: var(--green-soft);
+  border-color: #b9e3c7;
+  color: #14532d;
+}
+
+.skuu-app button,
+.skuu-app .btn {
+  font: inherit;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  color: inherit;
+}
+
+.skuu-app button:hover {
+  border-color: #bbb;
+}
+
+.skuu-app .kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.skuu-app .kpi {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.skuu-app .kpi.hl {
+  border-color: #9bd8b2;
+  background: linear-gradient(#fff, var(--green-soft));
+}
+
+.skuu-app .kpi small {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.skuu-app .kpi.hl small {
+  color: var(--green);
+}
+
+.skuu-app .kpi h3 {
+  margin: 6px 0 2px;
+  font-size: 15px;
+}
+
+.skuu-app .kpi .v {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.skuu-app .kpi p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.skuu-app section {
+  margin-top: 30px;
+}
+
+.skuu-app h2 {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+
+.skuu-app h2 span {
+  color: var(--green);
+  margin-right: 8px;
+}
+
+.skuu-app .grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.skuu-app .panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.skuu-app .tools {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.skuu-app select,
+.skuu-app input[type="search"] {
+  font: inherit;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #fff;
+  color: inherit;
+}
+
+/* ---- KPI redesign ---- */
+.skuu-app .kpi {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 18px 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 30px -14px rgba(20, 60, 40, 0.25);
+}
+
+.skuu-app .kpi::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--accent, var(--green));
+  opacity: 0.9;
+}
+
+.skuu-app .k-a {
+  --accent: #3b82f6;
+}
+.skuu-app .k-b {
+  --accent: #84cc16;
+}
+.skuu-app .k-c {
+  --accent: #f59e0b;
+}
+.skuu-app .k-d {
+  --accent: #22c55e;
+}
+
+.skuu-app .k-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skuu-app .k-no {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.skuu-app .k-ic {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  background: color-mix(in srgb, var(--accent) 14%, #fff);
+  color: var(--accent);
+}
+
+.skuu-app .kpi h3 {
+  margin: 12px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.skuu-app .kpi .v {
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 2px 0 8px;
+  background: linear-gradient(180deg, #111, #3a3f3c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.skuu-app .kpi p {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+
+/* 1: dot matrix */
+.skuu-app .dots {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 3px;
+}
+
+.skuu-app .dots i {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #3b82f6;
+  opacity: 0.15;
+  animation: dotin 0.5s ease forwards;
+}
+
+.skuu-app .dots i.on {
+  opacity: 0.85;
+}
+
+@keyframes dotin {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* 2: venn */
+.skuu-app .venn {
+  position: relative;
+  height: 46px;
+}
+
+.skuu-app .venn i {
+  position: absolute;
+  top: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+}
+
+.skuu-app .venn i:nth-child(1) {
+  left: calc(50% - 40px);
+  background: rgba(132, 204, 22, 0.35);
+}
+
+.skuu-app .venn i:nth-child(2) {
+  left: calc(50% - 6px);
+  background: rgba(34, 197, 94, 0.35);
+}
+
+.skuu-app .venn b {
+  position: absolute;
+  top: 8px;
+  left: calc(50% - 6px);
+  width: 12px;
+  height: 30px;
+  border-radius: 50%;
+  background: #16a34a;
+  opacity: 0.85;
+  animation: glow 2.2s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+  }
+}
+
+/* ---- 3: gauge ---- */
+.skuu-app .gauge {
+  --p: 0;
+  position: relative;
+  height: 46px;
+  border-radius: 99px;
+  background: #eef1ef;
+  overflow: hidden;
+}
+
+.skuu-app .gauge::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--p) * 1%);
+  border-radius: 99px;
+  background: repeating-linear-gradient(115deg, #f59e0b 0 10px, #fbbf24 10px 20px);
+  transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.skuu-app .gauge span {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  color: #7a5b00;
+}
+
+/* ---- 4: highlight card ---- */
+.skuu-app .kpi.k-d {
+  background: linear-gradient(145deg, #0f3d22 0%, #16a34a 100%);
+  border-color: #0f3d22;
+  color: #fff;
+  box-shadow: 0 18px 36px -14px rgba(22, 163, 74, 0.7);
+}
+
+.skuu-app .kpi.k-d::before {
+  background: linear-gradient(90deg, #bbf7d0, #fff);
+}
+
+.skuu-app .k-d .k-no,
+.skuu-app .k-d p {
+  color: rgba(255, 255, 255, 0.75);
+}
+.skuu-app .k-d h3 {
+  color: #fff;
+}
+
+.skuu-app .k-d .k-ic {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.skuu-app .k-d .v {
+  background: none;
+  -webkit-text-fill-color: #fff;
+  color: #fff;
+}
+
+.skuu-app .k-d::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  bottom: -40px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(rgba(255, 255, 255, 0.28), transparent 70%);
+}
+
+.skuu-app .mini-route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 46px;
+}
+
+.skuu-app .mini-route i {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.skuu-app .mini-route i.o {
+  background: #fca5a5;
+  box-shadow: 0 0 0 4px rgba(252, 165, 165, 0.25);
+}
+
+.skuu-app .mini-route i.g {
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+.skuu-app .mini-route u {
+  flex: 1;
+  height: 2px;
+  text-decoration: none;
+  position: relative;
+  background: repeating-linear-gradient(90deg, #fff 0 6px, transparent 6px 11px);
+  opacity: 0.8;
+}
+
+.skuu-app .mini-route u::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  animation: ship 1.6s ease-in-out infinite;
+}
+
+/* ---- Brand tabs ---- */
+.skuu-app .tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 16px;
+  padding: 6px;
+  border-radius: 999px;
+  width: fit-content;
+  max-width: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 22px -14px rgba(20, 60, 40, 0.35);
+}
+
+.skuu-app .tab {
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.18s ease;
+}
+
+.skuu-app .tab:hover {
+  background: #eef6f0;
+}
+
+.skuu-app .tab em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  background: #e8ece9;
+  color: #555;
+  border-radius: 99px;
+  padding: 2px 8px;
+}
+
+.skuu-app .tab.on {
+  background: #111;
+  color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(0, 0, 0, 0.5);
+}
+
+.skuu-app .tab.on em {
+  background: #16a34a;
+  color: #fff;
+}
+
+/* ---- Split bars ---- */
+.skuu-app .split-h {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.skuu-app .srow {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid #f0f2f1;
+}
+
+.skuu-app .srow:last-child {
+  border-bottom: 0;
+}
+
+.skuu-app .av {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  flex: 0 0 auto;
+}
+
+.skuu-app .sname {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.skuu-app .crown {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 99px;
+  padding: 2px 8px;
+}
+
+.skuu-app .strack {
+  height: 8px;
+  border-radius: 99px;
+  background: #edf0ee;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.skuu-app .strack i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #16a34a, #84cc16);
+  width: 0;
+  transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.skuu-app .sstat {
+  text-align: right;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.skuu-app .sstat b {
+  display: block;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+.skuu-app .sback {
+  display: inline-block;
+  margin-top: 2px;
+  background: var(--green-soft);
+  color: #14532d;
+  border-radius: 99px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ---- Route card extras ---- */
+.skuu-app .node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.skuu-app .node .av {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  font-size: 10px;
+}
+
+.skuu-app .node.out .av {
+  opacity: 0.7;
+}
+
+.skuu-app .hot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 12px 5px 14px;
+  border-bottom-left-radius: 14px;
+}
+
+/* ---- Route cards ---- */
+.skuu-app .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 14px;
+}
+
+.skuu-app .rc {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  animation: pop 0.35s ease both;
+}
+
+.skuu-app .rc:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  border-color: #9bd8b2;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.skuu-app .rc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.skuu-app .brand {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.skuu-app .ttl {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 2px 0 6px;
+}
+
+.skuu-app .meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.skuu-app .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.skuu-app .size {
+  min-width: 46px;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #111;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.skuu-app .size small {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+.skuu-app .route {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 16px 0 12px;
+}
+
+.skuu-app .node {
+  flex: 0 0 auto;
+  max-width: 42%;
+  padding: 8px 10px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.skuu-app .node small {
+  display: block;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.skuu-app .node.out {
+  background: #fdecec;
+  color: var(--red);
+  text-decoration: line-through;
+  text-decoration-color: rgba(220, 38, 38, 0.45);
+}
+
+.skuu-app .node.out small {
+  text-decoration: none;
+}
+
+.skuu-app .node.in {
+  background: var(--green-soft);
+  color: #14532d;
+  border: 1px solid #b9e3c7;
+}
+
+.skuu-app .dests {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 0 0 auto;
+  max-width: 48%;
+}
+
+.skuu-app .line {
+  flex: 1;
+  height: 2px;
+  position: relative;
+  min-width: 26px;
+  background: repeating-linear-gradient(90deg, var(--green) 0 6px, transparent 6px 11px);
+  opacity: 0.65;
+}
+
+.skuu-app .line::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
+  animation: ship 1.8s ease-in-out infinite;
+}
+
+@keyframes ship {
+  0% {
+    left: 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: calc(100% - 10px);
+    opacity: 0;
+  }
+}
+
+.skuu-app .rc-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.skuu-app .rc-foot .tag {
+  background: var(--green-soft);
+  color: #14532d;
+  border-radius: 99px;
+  padding: 3px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.skuu-app .rc-foot .price {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* ---- 3D coverflow (space) ---- */
+.skuu-app .seg {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #eef1ef;
+  margin-left: auto;
+}
+
+.skuu-app .seg button {
+  border: 0;
+  background: transparent;
+  border-radius: 9px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+.skuu-app .seg button.on {
+  background: #111;
+  color: #fff;
+}
+
+.skuu-app .space {
+  position: relative;
+  height: 440px;
+  perspective: 1300px;
+  overflow: hidden;
+  border-radius: 20px;
+  touch-action: pan-y;
+  user-select: none;
+  background: radial-gradient(700px 320px at 50% 38%, rgba(22, 163, 74, 0.14), transparent 70%),
+    linear-gradient(180deg, #f7fcf9, #eef6f1);
+}
+
+.skuu-app .floor {
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -70px;
+  height: 300px;
+  transform: rotateX(74deg);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+  background: linear-gradient(rgba(22, 163, 74, 0.3) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(90deg, rgba(22, 163, 74, 0.3) 1px, transparent 1px) 0 0 / 44px 44px;
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 95%);
+  mask-image: linear-gradient(to top, #000 10%, transparent 95%);
+  animation: floor 3.5s linear infinite;
+}
+
+@keyframes floor {
+  to {
+    background-position: 0 44px, 44px 44px;
+  }
+}
+
+.skuu-app .ring {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.skuu-app .space .rc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 320px;
+  margin: -150px 0 0 -160px;
+  cursor: pointer;
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease, filter 0.5s ease;
+}
+
+.skuu-app .space .rc.active {
+  cursor: default;
+  animation: bob 3.4s ease-in-out infinite;
+  box-shadow: 0 0 0 1px #86d0a2, 0 30px 50px -14px rgba(15, 60, 35, 0.5), 0 0 60px -10px rgba(22, 163, 74, 0.45);
+}
+
+@keyframes bob {
+  50% {
+    translate: 0 -9px;
+  }
+}
+
+.skuu-app .space .rc.active::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  background: linear-gradient(115deg, transparent 15%, rgba(94, 234, 212, 0.5) 32%, rgba(129, 140, 248, 0.45) 48%, rgba(251, 191, 36, 0.4) 64%, transparent 82%);
+  background-size: 260% 100%;
+  animation: holo 3.2s linear infinite;
+  transform: translateZ(2px);
+}
+
+@keyframes holo {
+  from {
+    background-position: 130% 0;
+  }
+  to {
+    background-position: -130% 0;
+  }
+}
+
+.skuu-app .snav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 300;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #dfe8e2;
+  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.3);
+}
+
+.skuu-app .snav.l {
+  left: 14px;
+}
+.skuu-app .snav.r {
+  right: 14px;
+}
+
+.skuu-app .snav:hover {
+  background: #111;
+  color: #fff;
+}
+
+.skuu-app .scount {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 300;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: rgba(17, 17, 17, 0.88);
+  color: #fff;
+  border-radius: 99px;
+  padding: 6px 14px;
+  white-space: nowrap;
+}
+
+.skuu-app .scount small {
+  opacity: 0.65;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+.skuu-app .empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.skuu-app .more {
+  display: block;
+  margin: 16px auto 0;
+}
+
+.skuu-app .hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.skuu-app footer {
+  margin-top: 30px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.skuu-app code {
+  background: #eef0ef;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
+
+.skuu-app .loader {
+  display: grid;
+  place-items: center;
+  gap: 14px;
+  padding: 90px 20px;
+  color: var(--muted);
+}
+
+.skuu-app .spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid #d9e7de;
+  border-top-color: var(--green);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.skuu-app .err {
+  border: 1px solid #f3c9c9;
+  background: #fdf1f1;
+  color: #7a1e1e;
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.skuu-app .err b {
+  color: #b91c1c;
+}
+
+@media (max-width: 860px) {
+  .skuu-app .kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+  .skuu-app .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .skuu-app .space {
+    height: 410px;
+  }
+  .skuu-app .space .rc {
+    width: 290px;
+    margin-left: -145px;
+  }
+}
+@media (max-width: 480px) {
+  .skuu-app .kpis {
+    grid-template-columns: 1fr;
+  }
+}
+@media (hover: none) {
+  .skuu-app .rc {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Refresh Inventory panel
+   ========================================================================== */
+
+.skuu-app .head-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.skuu-app button.btn-primary {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+  font-weight: 600;
+}
+
+.skuu-app button.btn-primary:hover {
+  background: #15803d;
+  border-color: #15803d;
+}
+
+.skuu-app button.btn-ghost {
+  background: transparent;
+}
+
+.skuu-app button.danger {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+  font-weight: 600;
+}
+
+.skuu-app button.danger:hover {
+  background: #b91c1c;
+}
+
+.skuu-app button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.skuu-app .rp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(17, 17, 17, 0.42);
+  backdrop-filter: blur(3px);
+  animation: rp-fade 0.16s ease;
+}
+
+@keyframes rp-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.skuu-app .rp-card {
+  width: min(560px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  animation: rp-rise 0.2s ease;
+}
+
+@keyframes rp-rise {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+}
+
+.skuu-app .rp-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.skuu-app .rp-head h3 {
+  margin: 2px 0 0;
+  font-size: 20px;
+}
+
+.skuu-app .rp-x {
+  border: none;
+  background: transparent;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.skuu-app .rp-lead {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 16px 0 4px;
+}
+
+.skuu-app .rp-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 18px 0 10px;
+}
+
+.skuu-app .rp-pill {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef0ef;
+  color: #3f4442;
+}
+
+.skuu-app .rp-pill.running {
+  background: var(--green-soft);
+  color: #14532d;
+}
+
+.skuu-app .rp-pill.cancelling {
+  background: #fff7e0;
+  color: #7a5b00;
+}
+
+.skuu-app .rp-pill.completed {
+  background: var(--green-soft);
+  color: #14532d;
+}
+
+.skuu-app .rp-pill.failed,
+.skuu-app .rp-pill.cancelled {
+  background: #fdf1f1;
+  color: #7a1e1e;
+}
+
+.skuu-app .rp-elapsed {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.skuu-app .rp-bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: #eef0ef;
+  overflow: hidden;
+}
+
+.skuu-app .rp-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  transition: width 0.4s ease;
+}
+
+.skuu-app .rp-bar > u {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: rp-shimmer 1.3s linear infinite;
+}
+
+@keyframes rp-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.skuu-app .rp-bar-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.skuu-app .rp-steps {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.skuu-app .rp-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.skuu-app .rp-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  flex: none;
+  position: relative;
+}
+
+.skuu-app .rp-step.done {
+  color: var(--ink);
+}
+
+.skuu-app .rp-step.done .rp-dot {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.skuu-app .rp-step.active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.skuu-app .rp-step.active .rp-dot {
+  border-color: var(--green);
+  box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
+  animation: rp-pulse 1.4s ease-out infinite;
+}
+
+@keyframes rp-pulse {
+  to {
+    box-shadow: 0 0 0 8px rgba(22, 163, 74, 0);
+  }
+}
+
+.skuu-app .rp-totals {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.skuu-app .rp-totals div {
+  background: #f7faf8;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.skuu-app .rp-totals small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.skuu-app .rp-totals b {
+  font-size: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.skuu-app .rp-note {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: #7a5b00;
+  background: #fff7e0;
+  border: 1px solid #f1deaa;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.skuu-app .rp-error {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: #7a1e1e;
+  background: #fdf1f1;
+  border: 1px solid #f3c9c9;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.skuu-app .rp-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 520px) {
+  .skuu-app .rp-totals {
+    grid-template-columns: 1fr 1fr;
+  }
+  .skuu-app .rp-actions {
+    flex-direction: column-reverse;
+  }
 }

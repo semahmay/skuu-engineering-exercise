@@ -12,6 +12,14 @@ class SKU(BaseModel):
     price: float = Field(..., description="Product price")
     currency: str = Field(default="EUR", description="Currency code")
     barcode: Optional[str] = Field(default=None, description="Product barcode/EAN")
+    style_code: Optional[str] = Field(
+        default=None,
+        description=(
+            "Manufacturer style/variant code captured from the source (e.g. the "
+            "Shopify variant SKU when it is not a GTIN). Stored for evidence and "
+            "future use; it is deliberately NOT used as a matching identity."
+        ),
+    )
     in_stock: bool = Field(default=False, description="Stock availability")
     url: str = Field(..., description="Product URL")
     scraped_at: datetime = Field(default_factory=datetime.utcnow, description="Scraping timestamp")
@@ -27,6 +35,7 @@ class SKU(BaseModel):
                 "price": 129.99,
                 "currency": "EUR",
                 "barcode": "1234567890123",
+                "style_code": "I032940_89",
                 "in_stock": True,
                 "url": "https://shop-a.com/nike-air-max-270-black-white-42",
                 "scraped_at": "2026-10-07T12:00:00Z",
