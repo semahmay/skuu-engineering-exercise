@@ -17,9 +17,10 @@ cp .env.example .env.local   # optional; defaults to http://localhost:8000
 npm run dev                  # http://localhost:3000
 ```
 
-The API base URL is read from `NEXT_PUBLIC_API_URL` at build time
-(`src/app/page.tsx`); if unset it defaults to `http://localhost:8000`. The
-backend must allow the frontend origin via CORS (`CORS_ORIGINS`).
+The API base URL is read from `NEXT_PUBLIC_API_BASE_URL` at build time
+(`src/app/page.tsx`, `src/app/RefreshPanel.tsx`); if unset it defaults to
+`http://localhost:8000`. The backend must allow the frontend origin via CORS
+(`CORS_ORIGINS`).
 
 ## Scripts
 

@@ -14,7 +14,7 @@ import {
   type RefreshStatus,
 } from "@/lib/refresh";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 const fmt = (n: number) => Math.round(n || 0).toLocaleString("en-US");
 

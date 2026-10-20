@@ -349,8 +349,8 @@ npm install
 npm run dev        # http://localhost:3000  (expects the API at :8000)
 ```
 
-Set `NEXT_PUBLIC_API_URL` if the API is not on `http://localhost:8000`
-(e.g. `NEXT_PUBLIC_API_URL=https://api.example.com npm run build`).
+Set `NEXT_PUBLIC_API_BASE_URL` if the API is not on `http://localhost:8000`
+(e.g. `NEXT_PUBLIC_API_BASE_URL=https://api.example.com npm run build`).
 
 ### Demo database (snapshot / restore)
 
@@ -548,7 +548,7 @@ npm run build
 
 | Symptom | Likely cause / fix |
 |---|---|
-| Dashboard shows "Could not reach the API" | Backend not running, or on another port. Start `uvicorn app.main:app --port 8000`; if you change the port, rebuild the frontend with `NEXT_PUBLIC_API_URL` set. |
+| Dashboard shows "Could not reach the API" | Backend not running, or on another port. Start `uvicorn app.main:app --port 8000`; if you change the port, rebuild the frontend with `NEXT_PUBLIC_API_BASE_URL` set. |
 | `/api/v1/health` reports database not connected | MongoDB is not running, or `MONGODB_URI` in `backend/.env` is wrong. On Windows: `Get-Service MongoDB` / `Start-Service MongoDB`. |
 | Metrics are zero / dashboard is empty | The API points at an empty database. Set `MONGODB_DB=skuu_demo` in `backend/.env` and run the demo restore (see [Demo database](#demo-database-snapshot--restore)). |
 | `ModuleNotFoundError: No module named 'app'` | Run backend commands from `backend/`, not the repo root. |
