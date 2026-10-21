@@ -514,8 +514,16 @@ def _pct(numerator: int, denominator: int) -> float:
     return round(numerator / denominator * 100.0, 4)
 
 
-def compute_metrics(skus: Sequence[NormalizedSKU]) -> Metrics:
-    """Compute the dashboard metrics for a set of normalized SKUs."""
+def compute_metrics(
+    skus: Sequence[NormalizedSKU],
+    clusters: Optional[Sequence[Cluster]] = None,
+) -> Metrics:
+    """Compute the dashboard metrics for a set of normalized SKUs.
+
+    Matching rules are unchanged. ``clusters`` is an optional prebuilt result so
+    a caller that also needs the groups (the dashboard API) can run the
+    union-find once instead of once per endpoint; omitted, it is built here.
+    """
     total = len(skus)
     metrics = Metrics(total_skus=total, shops=sorted({s.shop for s in skus}))
 
@@ -534,7 +542,7 @@ def compute_metrics(skus: Sequence[NormalizedSKU]) -> Metrics:
     shop_opp: Dict[str, int] = defaultdict(int)
     brand_opp: Dict[str, int] = defaultdict(int)
 
-    clusters = build_clusters(skus)
+    clusters = build_clusters(skus) if clusters is None else clusters
     for cluster in clusters:
         if not cluster.is_cross_shop:
             continue

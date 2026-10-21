@@ -15,6 +15,45 @@ import RefreshPanel from "./RefreshPanel";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
+// Hard ceiling for a dashboard request. The backend builds the matching
+// snapshot once (a full 62k-row scan plus clustering) and caches it, so a warm
+// request is fast; the first request after a cold start or a refresh is the
+// slow one. Without a ceiling the loader could spin forever with no explanation.
+const REQUEST_TIMEOUT_MS = 120_000;
+
+async function fetchJson<T>(path: string): Promise<T> {
+  const controller = new AbortController();
+  const startedAt = Date.now();
+  const timer = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      let detail = "";
+      try {
+        const body = (await res.json()) as { detail?: unknown };
+        if (body?.detail) detail = `: ${String(body.detail)}`;
+      } catch {
+        // Non-JSON error body: the status code is the useful part.
+      }
+      throw new Error(`${path} responded ${res.status}${detail}`);
+    }
+    return (await res.json()) as T;
+  } catch (e) {
+    if (controller.signal.aborted) {
+      const secs = Math.round((Date.now() - startedAt) / 1000);
+      throw new Error(
+        `${path} timed out after ${secs}s. The backend may still be computing — retry in a moment.`,
+      );
+    }
+    throw e;
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
 /* ----------------------------- API types ----------------------------- */
 
 type ShopMetrics = {
@@ -45,6 +84,12 @@ type Metrics = {
   by_brand: Record<string, BrandMetrics>;
   algorithm_version: string;
   generated_at?: string;
+  cache?: {
+    hit: boolean;
+    age_seconds: number;
+    build_ms: number;
+    total_skus: number;
+  };
 };
 
 type SplitStat = {
@@ -375,6 +420,8 @@ export default function Home() {
   const [groups, setGroups] = useState<Group[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [groupsError, setGroupsError] = useState<string | null>(null);
+  const [elapsed, setElapsed] = useState(0);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
   const [brand, setBrand] = useState("");
@@ -391,38 +438,49 @@ export default function Home() {
   const wheelLockRef = useRef(0);
 
   const fetchData = useCallback(async () => {
-    const [mRes, gRes] = await Promise.all([
-      fetch(`${API_BASE}/api/v1/metrics`, { cache: "no-store" }),
-      fetch(`${API_BASE}/api/v1/matching/groups`, {
-        cache: "no-store",
-      }),
+    // Both endpoints share one cached snapshot on the backend, so requesting
+    // them together costs one computation, not two. Groups are optional: a
+    // failure there must not hide the metrics that did load.
+    const [mRes, gRes] = await Promise.allSettled([
+      fetchJson<Metrics>("/api/v1/metrics"),
+      fetchJson<{ groups?: Group[] }>("/api/v1/matching/groups"),
     ]);
-    if (!mRes.ok) throw new Error(`metrics API responded ${mRes.status}`);
-    const m = (await mRes.json()) as Metrics;
-    const g = gRes.ok
-      ? ((await gRes.json()) as { groups?: Group[] })
-      : { groups: [] };
-    return { m, g };
+    if (mRes.status === "rejected") throw mRes.reason;
+    return {
+      m: mRes.value,
+      g: gRes.status === "fulfilled" ? gRes.value : { groups: [] },
+      groupsError:
+        gRes.status === "rejected"
+          ? gRes.reason instanceof Error
+            ? gRes.reason.message
+            : "failed to load cross-shop groups"
+          : null,
+    };
   }, []);
 
-  const applyData = useCallback((m: Metrics, g: { groups?: Group[] }) => {
-    setMetrics(m);
-    setUpdatedAt(m.generated_at ?? new Date().toISOString());
-    setGroups(g.groups ?? []);
-    setError(null);
-    setLoading(false);
-  }, []);
+  const applyData = useCallback(
+    (m: Metrics, g: { groups?: Group[] }, gErr: string | null) => {
+      setMetrics(m);
+      setUpdatedAt(m.generated_at ?? new Date().toISOString());
+      setGroups(g.groups ?? []);
+      setError(null);
+      setGroupsError(gErr);
+      setLoading(false);
+    },
+    [],
+  );
 
   const fail = useCallback((e: unknown) => {
-    setError(e instanceof Error ? e.message : "Failed to load dashboard");
+    const msg = e instanceof Error ? e.message : "Failed to load dashboard";
+    setError(msg);
     setLoading(false);
   }, []);
 
   useEffect(() => {
     let cancelled = false;
     fetchData()
-      .then(({ m, g }) => {
-        if (!cancelled) applyData(m, g);
+      .then(({ m, g, groupsError: gErr }) => {
+        if (!cancelled) applyData(m, g, gErr);
       })
       .catch((e) => {
         if (!cancelled) fail(e);
@@ -432,10 +490,21 @@ export default function Home() {
     };
   }, [fetchData, applyData, fail]);
 
+  // Visible elapsed time: a silent spinner is what made a slow first load look
+  // like a hang. The request itself is bounded by REQUEST_TIMEOUT_MS.
+  useEffect(() => {
+    if (!loading) return;
+    const id = window.setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [loading]);
+
   const refresh = () => {
     setLoading(true);
+    setElapsed(0);
+    setError(null);
+    setGroupsError(null);
     fetchData()
-      .then(({ m, g }) => applyData(m, g))
+      .then(({ m, g, groupsError: gErr }) => applyData(m, g, gErr))
       .catch(fail);
   };
 
@@ -696,10 +765,17 @@ export default function Home() {
         {!metrics && error && (
           <div className="err">
             <p>
-              <b>Could not reach the API.</b> {error}
+              <b>Could not load the dashboard.</b> {error}
             </p>
             <p style={{ marginTop: 8, fontSize: 13 }}>
-              Make sure the backend is running at <code>{API_BASE}</code>.
+              The API is <code>{API_BASE}</code>. If this was a timeout, the
+              first computation after a cold start can take a while; retrying
+              usually reuses the backend&apos;s cached result.
+            </p>
+            <p style={{ marginTop: 12 }}>
+              <button className="btn-ghost" onClick={refresh} disabled={loading}>
+                {loading ? "Retrying…" : "Try again"}
+              </button>
             </p>
           </div>
         )}
@@ -708,6 +784,11 @@ export default function Home() {
           <div className="loader">
             <div className="spinner" />
             <p>Computing cross-shop matches…</p>
+            <p className="rp-note">
+              {elapsed}s elapsed · the first load scans the whole catalogue and
+              can take up to {REQUEST_TIMEOUT_MS / 1000}s. Results are cached
+              after that.
+            </p>
           </div>
         )}
 
@@ -877,6 +958,19 @@ export default function Home() {
                     </button>
                   </div>
                 </div>
+
+                {groupsError && (
+                  <p className="rp-error">
+                    Cross-shop routes could not be loaded: {groupsError}{" "}
+                    <button
+                      className="btn-ghost"
+                      onClick={refresh}
+                      disabled={loading}
+                    >
+                      Retry
+                    </button>
+                  </p>
+                )}
 
                 <p className="hint" style={{ margin: "0 0 12px" }}>
                   {fmt(list.length)} route{list.length === 1 ? "" : "s"} — sold out

@@ -21,6 +21,7 @@ from app.refresh.concurrency import RefreshConcurrency
 from app.refresh.job import RefreshJob, ShopResult
 from app.refresh.restock import detect_restocks, record_restocks, snapshot_stock
 from app.refresh.shops import SHOPS, run_shop, scraper_failed, stats_to_totals
+from app.matching.service import invalidate_matching_cache
 
 
 class RefreshCancelled(Exception):
@@ -151,9 +152,14 @@ async def run_refresh(
         job.cancelled = True
         job.end_shop()
         job.finish("cancelled", "Refresh cancelled")
+        # Scrapers may have persisted rows before the cancellation.
+        invalidate_matching_cache(reason="refresh cancelled")
     except Exception as exc:  # noqa: BLE001
         job.end_shop()
         job.finish("failed", f"{type(exc).__name__}: {exc}")
+        # The run may have written SKUs before it failed; never leave the
+        # dashboard serving a pre-refresh snapshot.
+        invalidate_matching_cache(reason="refresh failed")
     return job
 
 
@@ -224,6 +230,8 @@ async def _pipeline(
             job.failed_shops.append(spec.shop_id)
             job.completed_shops = index
             job.end_shop()
+            # A failing scraper may still have persisted some rows before raising.
+            invalidate_matching_cache(reason=f"refresh:{spec.shop_id}")
             continue
 
         discovered, inserted, updated, failed = stats_to_totals(stats)
@@ -257,6 +265,9 @@ async def _pipeline(
 
         job.completed_shops = index
         job.end_shop()
+        # This shop's upserts changed the SKU data; rebuild the dashboard
+        # snapshot on the next request instead of serving pre-refresh numbers.
+        invalidate_matching_cache(reason=f"refresh:{spec.shop_id}")
 
     _raise_if_cancelled(job, cancel_event)
 

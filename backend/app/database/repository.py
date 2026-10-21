@@ -50,6 +50,10 @@ async def insert_sku(sku: SKU) -> SKUInDB:
     doc = sku.model_dump()
     result = await collection.insert_one(doc)
     doc["_id"] = str(result.inserted_id)
+    # The dashboard's matching snapshot must not outlive this write.
+    from app.matching.service import invalidate_matching_cache
+
+    invalidate_matching_cache(reason="insert_sku")
     return SKUInDB(**doc)
 
 
@@ -86,4 +90,8 @@ async def delete_sku_by_id(sku_id: str) -> bool:
     from bson import ObjectId
     collection = await get_sku_collection()
     result = await collection.delete_one({"_id": ObjectId(sku_id)})
+    if result.deleted_count:
+        from app.matching.service import invalidate_matching_cache
+
+        invalidate_matching_cache(reason="delete_sku_by_id")
     return result.deleted_count > 0
