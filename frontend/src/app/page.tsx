@@ -421,7 +421,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [groupsError, setGroupsError] = useState<string | null>(null);
-  const [elapsed, setElapsed] = useState(0);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
 
   const [brand, setBrand] = useState("");
@@ -490,17 +489,8 @@ export default function Home() {
     };
   }, [fetchData, applyData, fail]);
 
-  // Visible elapsed time: a silent spinner is what made a slow first load look
-  // like a hang. The request itself is bounded by REQUEST_TIMEOUT_MS.
-  useEffect(() => {
-    if (!loading) return;
-    const id = window.setInterval(() => setElapsed((s) => s + 1), 1000);
-    return () => window.clearInterval(id);
-  }, [loading]);
-
   const refresh = () => {
     setLoading(true);
-    setElapsed(0);
     setError(null);
     setGroupsError(null);
     fetchData()
@@ -784,11 +774,6 @@ export default function Home() {
           <div className="loader">
             <div className="spinner" />
             <p>Computing cross-shop matches…</p>
-            <p className="rp-note">
-              {elapsed}s elapsed · the first load scans the whole catalogue and
-              can take up to {REQUEST_TIMEOUT_MS / 1000}s. Results are cached
-              after that.
-            </p>
           </div>
         )}
 
